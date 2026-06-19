@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RECOWAVE - AI 취향 분석 및 미디어 추천 서비스</title>
+  <meta name="description" content="본 애니메이션, 드라마, 만화를 기록하고 평점을 남기면 AI가 당신의 취향을 분석하여 새로운 작품을 정교하게 추천해주는 프리미엄 미디어 로그 서비스">
+  
+  <!-- Google Fonts: Outfit & Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <!-- Global CSS Style -->
+  <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+  <!-- 앱 글로벌 컨테이너 -->
+  <div id="app-container">
+    
+    <!-- 네비게이션 바 -->
+    <header id="main-header">
+      <div class="header-content">
+        <div id="logo-area" class="nav-brand" role="banner">
+          <span class="logo-icon">✨</span>
+          <h1 id="logo-title">RECOWAVE</h1>
+        </div>
+        
+        <nav id="main-nav" aria-label="메인 네비게이션">
+          <ul>
+            <li><button id="nav-btn-home" class="nav-item active" data-view="home">홈</button></li>
+            <li><button id="nav-btn-search" class="nav-item" data-view="search">검색</button></li>
+            <li><button id="nav-btn-recommend" class="nav-item" data-view="recommend">AI 추천</button></li>
+            <li><button id="nav-btn-mypage" class="nav-item" data-view="mypage">마이페이지</button></li>
+          </ul>
+        </nav>
+        
+        <div id="auth-header-area">
+          <!-- 로그인 여부에 따라 JS로 동적 렌더링 -->
+          <button id="btn-header-login" class="btn btn-secondary">로그인</button>
+          <button id="btn-header-signup" class="btn btn-primary" style="margin-left: 8px;">회원가입</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 메인 뷰 영역 (SPA 뷰 전환) -->
+    <main id="main-content">
+      
+      <!-- 1. 홈 뷰 -->
+      <section id="view-home" class="view-section active">
+        <!-- 히어로 배너 -->
+        <div id="home-hero-banner" class="hero-banner">
+          <div class="hero-content">
+            <span class="badge badge-accent">AI 취향 분석 추천</span>
+            <h2>당신의 인생작을 찾고 기록하세요</h2>
+            <p>애니메이션, 드라마, 만화에 평점과 감상평을 기록해보세요.<br>RECOWAVE의 인공지능이 즉시 당신의 선호 장르와 국가를 분석해 맞춤 콘텐츠를 제안합니다.</p>
+            <div class="hero-actions">
+              <button id="btn-hero-start" class="btn btn-lg btn-primary">지금 시작하기</button>
+              <button id="btn-hero-search" class="btn btn-lg btn-secondary">작품 검색하기</button>
+            </div>
+          </div>
+          <div class="hero-backdrop-glow"></div>
+        </div>
+
+        <!-- 미디어 타입 카테고리 슬라이드/그리드 -->
+        <div class="category-section">
+          <div class="section-header">
+            <h3>🔥 실시간 인기 애니메이션</h3>
+            <span class="section-subtitle">많은 이들이 높은 점수를 준 명작 애니</span>
+          </div>
+          <div id="home-anime-grid" class="media-row scrollbar-hidden">
+            <!-- JS로 동적 렌더링 -->
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="section-header">
+            <h3>🎬 화제의 드라마 & 시리즈</h3>
+            <span class="section-subtitle">인생을 채워줄 웰메이드 드라마 컬렉션</span>
+          </div>
+          <div id="home-drama-grid" class="media-row scrollbar-hidden">
+            <!-- JS로 동적 렌더링 -->
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="section-header">
+            <h3>📖 놓치면 후회할 웹툰 & 만화</h3>
+            <span class="section-subtitle">몰입력 최강의 추천 만화 리스트</span>
+          </div>
+          <div id="home-manga-grid" class="media-row scrollbar-hidden">
+            <!-- JS로 동적 렌더링 -->
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="section-header">
+            <h3>🎥 지금 뜨는 영화</h3>
+            <span class="section-subtitle">극장과 스트리밍을 함께 아우르는 영화 컬렉션</span>
+          </div>
+          <div id="home-movie-grid" class="media-row scrollbar-hidden">
+            <!-- JS로 동적 렌더링 -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. 검색 및 필터 뷰 -->
+      <section id="view-search" class="view-section">
+        <div class="page-title-area">
+          <h2>작품 탐색</h2>
+          <p>카테고리와 장르 필터를 이용하여 원하는 작품을 빠르게 검색하세요.</p>
+        </div>
+        
+        <!-- 검색 및 필터 컨트롤 -->
+        <div id="search-control-panel" class="search-filter-box glass-card">
+          <div class="search-bar-row">
+            <span class="search-input-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="작품 제목이나 줄거리를 검색하세요..." aria-label="작품 검색어 입력">
+            <button id="btn-search-execute" class="btn btn-primary">검색</button>
+          </div>
+          
+          <div class="filter-options-row">
+            <!-- 미디어 타입 필터 -->
+            <div class="filter-group">
+              <span class="filter-label">미디어 구분</span>
+              <div class="filter-chips" id="filter-type-chips">
+                <button class="chip active" data-type="all">전체</button>
+                <button class="chip" data-type="Anime">애니메이션</button>
+                <button class="chip" data-type="Drama">드라마</button>
+                <button class="chip" data-type="Manga">만화/웹툰</button>
+                <button class="chip" data-type="Movie">영화</button>
+              </div>
+            </div>
+            
+            <!-- 장르 필터 -->
+            <div class="filter-group">
+              <span class="filter-label">장르</span>
+              <div class="filter-chips" id="filter-genre-chips">
+                <button class="chip active" data-genre="all">전체 장르</button>
+                <!-- JS에서 동적으로 고유 장르 추출하여 렌더링 -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 검색 결과 그리드 -->
+        <div class="search-results-container">
+          <div class="results-header">
+            <span id="search-results-count">검색 결과 0건</span>
+          </div>
+          <div id="search-results-grid" class="media-grid">
+            <!-- 검색 결과 노출 영역 -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. 작품 상세 뷰 -->
+      <section id="view-detail" class="view-section">
+        <button id="btn-detail-back" class="btn-back">← 이전 화면으로</button>
+        
+        <div id="detail-content-container" class="detail-layout">
+          <!-- JS로 동적 렌더링 (포스터, 메인 상세정보, 찜하기/감상평 등록 버튼, 리뷰 리스트) -->
+        </div>
+      </section>
+
+      <!-- 4. AI 추천 뷰 -->
+      <section id="view-recommend" class="view-section">
+        <div class="page-title-area">
+          <h2>AI 취향 맞춤 추천</h2>
+          <p>사용자님의 과거 미디어 기록(평점 4~5점)을 분석하여 매칭된 추천 콘텐츠를 보여줍니다.</p>
+        </div>
+
+        <!-- 취향 요약 분석 보드 -->
+        <div id="ai-taste-analysis-board" class="analysis-board glass-card">
+          <!-- 로그아웃 상태일 때 -->
+          <div class="board-unauthorized hide">
+            <p>회원가입 후 평점을 남기시면 AI가 정교한 취향 분석을 시작합니다.</p>
+            <button class="btn btn-primary btn-auth-trigger">로그인하고 분석하기</button>
+          </div>
+          
+          <!-- 로그인 상태일 때 -->
+          <div class="board-authorized">
+            <div class="user-taste-summary">
+              <div class="taste-stat">
+                <span class="stat-label">분석 대상 기록 수</span>
+                <span id="ai-stat-record-count" class="stat-value">0개</span>
+              </div>
+              <div class="taste-stat">
+                <span class="stat-label">선호 카테고리</span>
+                <span id="ai-stat-fav-type" class="stat-value">-</span>
+              </div>
+              <div class="taste-stat">
+                <span class="stat-label">선호 1순위 장르</span>
+                <span id="ai-stat-fav-genre" class="stat-value">-</span>
+              </div>
+            </div>
+            <div class="ai-speech-bubble">
+              <span class="ai-avatar">🤖</span>
+              <p id="ai-welcome-speech">평가하신 데이터를 바탕으로 취향 가중치를 실시간으로 계산했습니다. 아래의 작품들이 취향 저격일 확률이 가장 높습니다!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI 추천 결과 그리드 -->
+        <div class="recommendations-container">
+          <h3 class="recommend-title">🎯 오직 당신만을 위한 추천 리스트</h3>
+          <div id="ai-recommendations-list" class="recommend-grid">
+            <!-- AI 추천 목록 렌더링 -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. 마이페이지 뷰 -->
+      <section id="view-mypage" class="view-section">
+        <!-- 로그인 전 경고 화면 -->
+        <div id="mypage-unauthorized" class="mypage-auth-fallback glass-card hide">
+          <div class="fallback-content">
+            <span class="fallback-icon">🔒</span>
+            <h3>로그인이 필요한 서비스입니다</h3>
+            <p>기록한 작품 통계 및 회원 정보 관리를 위해 먼저 로그인해 주세요.</p>
+            <button class="btn btn-primary btn-auth-trigger">로그인 / 회원가입</button>
+          </div>
+        </div>
+
+        <!-- 로그인 후 정상 정보 노출 영역 -->
+        <div id="mypage-authorized" class="mypage-layout">
+          
+          <!-- 프로필 및 요약 정보 -->
+          <div class="mypage-sidebar glass-card">
+            <div class="profile-card">
+              <div class="profile-avatar">✨</div>
+              <h3 id="mypage-user-nickname">사용자닉네임</h3>
+              <span id="mypage-user-email" class="user-email-text">user@email.com</span>
+            </div>
+            
+            <div class="profile-actions-form">
+              <h4>정보 수정</h4>
+              <div class="form-group">
+                <label for="input-edit-nickname">닉네임</label>
+                <input type="text" id="input-edit-nickname">
+              </div>
+              <div class="form-group">
+                <label for="input-edit-password">새 비밀번호 (변경시에만 입력)</label>
+                <input type="password" id="input-edit-password" placeholder="새 비밀번호 입력">
+              </div>
+              <button id="btn-profile-update" class="btn btn-secondary btn-block">프로필 정보 저장</button>
+            </div>
+          </div>
+
+          <!-- 통계 및 기록 내역 -->
+          <div class="mypage-main-content">
+            
+            <!-- 활동 요약 카드들 -->
+            <div class="activity-summary-row">
+              <div class="summary-card glass-card">
+                <span class="summary-label">기록한 작품</span>
+                <span id="mypage-stat-total-count" class="summary-value">0</span>
+              </div>
+              <div class="summary-card glass-card">
+                <span class="summary-label">평균 평점</span>
+                <span id="mypage-stat-avg-rating" class="summary-value">0.0</span>
+              </div>
+              <div class="summary-card glass-card">
+                <span class="summary-label">찜한 작품 수</span>
+                <span id="mypage-stat-watchlist-count" class="summary-value">0</span>
+              </div>
+            </div>
+
+            <!-- 시각화 통계 차트 보드 (Vanilla CSS로 그리는 세련된 차트) -->
+            <div class="mypage-charts-row">
+              <div class="chart-card glass-card">
+                <h4>📊 선호 장르 분석 (가장 많이 본 장르 Top 4)</h4>
+                <div id="chart-genre-bars" class="bar-chart-container">
+                  <!-- 장르별 비중 바 그래프동적 빌드 -->
+                </div>
+              </div>
+              
+              <div class="chart-card glass-card">
+                <h4>🌍 국가별 감상 비율</h4>
+                <div id="chart-country-donuts" class="percentage-chart-container">
+                  <!-- 국가별 비중 원형/게이지동적 빌드 -->
+                </div>
+              </div>
+            </div>
+
+            <!-- 활동 내역 탭 컨트롤 -->
+            <div class="mypage-history-tabs-container glass-card">
+              <div class="history-tab-headers">
+                <button id="tab-btn-reviews" class="tab-header-btn active">작성한 평가 & 리뷰</button>
+                <button id="tab-btn-watchlist" class="tab-header-btn">나의 찜 목록</button>
+              </div>
+              
+              <div class="history-tab-content">
+                <!-- 작성한 리뷰 리스트 -->
+                <div id="mypage-reviews-tab" class="tab-content-panel active">
+                  <div id="mypage-reviews-list" class="mypage-list-container">
+                    <!-- 리뷰 카드 렌더링 -->
+                  </div>
+                </div>
+
+                <!-- 찜 목록 리스트 -->
+                <div id="mypage-watchlist-tab" class="tab-content-panel">
+                  <div id="mypage-watchlist-grid" class="media-grid-small">
+                    <!-- 찜 작품 카드 렌더링 -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- 푸터 -->
+    <footer id="main-footer">
+      <div class="footer-content">
+        <p>&copy; 2026 RECOWAVE. All rights reserved. Powered by Antigravity AI Engine.</p>
+        <div class="footer-links">
+          <span>이용약관</span>
+          <span>개인정보처리방침</span>
+          <span>고객센터</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ==================== 모달창 레이어 ==================== -->
+
+  <!-- 1. 인증 모달 (로그인 / 회원가입) -->
+  <div id="auth-modal" class="modal-overlay hide" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+    <div class="modal-content glass-card">
+      <button class="btn-modal-close" id="btn-auth-close" aria-label="닫기">×</button>
+      
+      <!-- 로그인 폼 영역 -->
+      <div id="auth-login-box">
+        <h3 id="auth-modal-title">로그인</h3>
+        <p class="modal-sub">RECOWAVE에 로그인하여 나만의 감상록을 채워보세요.</p>
+        
+        <form id="form-login" onsubmit="return false;">
+          <div class="form-group">
+            <label for="login-email">이메일 주소</label>
+            <input type="email" id="login-email" required placeholder="example@email.com">
+          </div>
+          <div class="form-group">
+            <label for="login-password">비밀번호</label>
+            <input type="password" id="login-password" required placeholder="비밀번호 입력">
+          </div>
+          <div class="form-error-msg" id="login-error-msg"></div>
+          <button type="submit" id="btn-login-submit" class="btn btn-primary btn-block">로그인</button>
+        </form>
+        
+        <div class="auth-toggle-link">
+          아직 회원이 아니신가요? <button id="btn-go-signup">회원가입</button>
+        </div>
+      </div>
+
+      <!-- 회원가입 폼 영역 -->
+      <div id="auth-signup-box" class="hide">
+        <h3>회원가입</h3>
+        <p class="modal-sub">취향 맞춤 애니/드라마/만화 추천 서비스를 만나보세요.</p>
+        
+        <form id="form-signup" onsubmit="return false;">
+          <div class="form-group">
+            <label for="signup-email">이메일 주소</label>
+            <div class="input-with-btn">
+              <input type="email" id="signup-email" required placeholder="name@domain.com">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="signup-nickname">닉네임</label>
+            <input type="text" id="signup-nickname" required placeholder="닉네임 입력">
+          </div>
+          <div class="form-group">
+            <label for="signup-password">비밀번호</label>
+            <input type="password" id="signup-password" required placeholder="비밀번호 (6자 이상)">
+          </div>
+          <div class="form-group">
+            <label for="signup-password-confirm">비밀번호 확인</label>
+            <input type="password" id="signup-password-confirm" required placeholder="비밀번호 다시 입력">
+          </div>
+          <div class="form-error-msg" id="signup-error-msg"></div>
+          <div class="form-success-msg" id="signup-success-msg"></div>
+          <button type="submit" id="btn-signup-submit" class="btn btn-primary btn-block">가입하기</button>
+        </form>
+        
+        <div class="auth-toggle-link">
+          이미 계정이 있으신가요? <button id="btn-go-login">로그인</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 감상 기록 / 리뷰 등록 모달 -->
+  <div id="log-modal" class="modal-overlay hide" role="dialog" aria-modal="true" aria-labelledby="log-modal-title">
+    <div class="modal-content glass-card">
+      <button class="btn-modal-close" id="btn-log-close" aria-label="닫기">×</button>
+      
+      <h3 id="log-modal-title">감상 기록 등록</h3>
+      <p id="log-modal-work-title" class="modal-sub">작품명</p>
+      
+      <form id="form-log-review" onsubmit="return false;">
+        <input type="hidden" id="log-work-id">
+        
+        <!-- 별점 선택 -->
+        <div class="form-group text-center">
+          <label class="star-rating-label">이 작품은 몇 점인가요?</label>
+          <div class="star-rating-selector">
+            <div class="star-wrapper">
+              <span class="star-base">★</span>
+              <span class="star-part left" data-val="0.5">★</span>
+              <span class="star-part right" data-val="1.0">★</span>
+            </div>
+            <div class="star-wrapper">
+              <span class="star-base">★</span>
+              <span class="star-part left" data-val="1.5">★</span>
+              <span class="star-part right" data-val="2.0">★</span>
+            </div>
+            <div class="star-wrapper">
+              <span class="star-base">★</span>
+              <span class="star-part left" data-val="2.5">★</span>
+              <span class="star-part right" data-val="3.0">★</span>
+            </div>
+            <div class="star-wrapper">
+              <span class="star-base">★</span>
+              <span class="star-part left" data-val="3.5">★</span>
+              <span class="star-part right" data-val="4.0">★</span>
+            </div>
+            <div class="star-wrapper">
+              <span class="star-base">★</span>
+              <span class="star-part left" data-val="4.5">★</span>
+              <span class="star-part right" data-val="5.0">★</span>
+            </div>
+          </div>
+          <span id="star-rating-text" class="rating-badge-text">별점을 선택하세요</span>
+        </div>
+        
+        <!-- 감상 코멘트 입력 -->
+        <div class="form-group">
+          <label for="log-review-content">리뷰 및 감상평 (선택)</label>
+          <textarea id="log-review-content" rows="4" placeholder="작품을 보고 느낀 생각이나 솔직한 한줄평을 적어주세요..."></textarea>
+        </div>
+        
+        <button type="submit" id="btn-log-submit" class="btn btn-primary btn-block">기록 저장</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== 스크립트 파일 로드 순서 (의존성 관리) ==================== -->
+  <script src="src/data/mockData.js"></script>
+  <script src="src/utils/db.js"></script>
+  <script src="src/utils/ai.js"></script>
+  <script src="src/main.js"></script>
+</body>
+</html>
